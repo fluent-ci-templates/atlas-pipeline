@@ -28,11 +28,19 @@ Now you can run the pipeline with:
 dagger run fluentci .
 ```
 
+## Environment variables
+
+| Variable         | Description                    |
+| ---------------- | ------------------------------ |
+| DATABASE_URL     | The database connection string |
+| DATABASE_DEV_URL | The database connection string used for calculating migrations differences |
+
 ## Jobs
 
 | Job       | Description               |
 | --------- | ------------------------- |
 | migrate   | Apply database migrations |
+| dry_run   | Dry run migrations        |
 
 ## Programmatic usage
 
