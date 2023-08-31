@@ -11,7 +11,7 @@ A ready-to-use CI/CD Pipeline for managing your database migrations with [Atlas]
 Run the following command in your project:
 
 ```bash
-dagger run fluentci atlas_pipeline
+fluentci run atlas_pipeline
 ```
 
 Or, if you want to use it as a template:
