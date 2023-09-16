@@ -1,9 +1,11 @@
-import Client from "@dagger.io/dagger";
+import Client from "@fluentci.io/dagger";
 
 export enum Job {
   migrate = "migrate",
   dryRun = "dry_run",
 }
+
+export const exclude = [];
 
 const DATABASE_URL = Deno.env.get("DATABASE_URL");
 const DATABASE_DEV_URL =
