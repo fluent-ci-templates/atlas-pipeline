@@ -47,8 +47,8 @@ dagger run fluentci .
 You can also use this pipeline programmatically:
 
 ```ts
-import Client, { connect } from "https://sdk.fluentci.io/v0.1.7/mod";
-import { migrate } from "https://pkg.fluentci.io/atlas_pipeline@v0.2.0/mod.ts";
+import Client, { connect } from "https://sdk.fluentci.io/v0.1.9/mod";
+import { migrate } from "https://pkg.fluentci.io/atlas_pipeline@v0.2.1/mod.ts";
 
 function pipeline(src = ".") {
   connect(async (client: Client) => {
