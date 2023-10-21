@@ -1,0 +1,5 @@
+{
+  atlas {
+    migrate(src: ".", databaseUrl: "DATABASE_URL")
+  }
+}
