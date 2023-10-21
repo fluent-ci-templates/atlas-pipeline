@@ -16,11 +16,11 @@ jobs:
           curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.8.8 sh
           sudo mv bin/dagger /usr/local/bin
           dagger version
-      - name: Setup Shuttle API Key
+      - name: Setup DATABASE_URL
         run: |
           sed -i "s/DATABASE_URL/$DATABASE_URL/g" example/migrate.gql
         env:
-          DATABASE)URL: mysql://root:pass@mysql:3306/example
+          DATABASE_URL: mysql://root:pass@mysql:3306/example
       - name: Run Dagger Pipelines
         run: |
           dagger query --doc migrate.gql
