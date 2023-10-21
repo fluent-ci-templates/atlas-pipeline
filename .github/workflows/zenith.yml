@@ -18,9 +18,9 @@ jobs:
           dagger version
       - name: Setup DATABASE_URL
         run: |
-          sed -i "s/DATABASE_URL/$DATABASE_URL/g" example/migrate.gql
+          sed -i "s|DATABASE_URL|$DATABASE_URL|g" example/migrate.gql
         env:
-          DATABASE_URL: "mysql://root:pass@mysql:3306/example"
+          DATABASE_URL: mysql://root:pass@mysql:3306/example
       - name: Run Dagger Pipelines
         run: |
           dagger query --doc migrate.gql
