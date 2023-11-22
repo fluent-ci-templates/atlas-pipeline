@@ -62,9 +62,7 @@ export const migrate = async (
         "atlas schema apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --auto-approve",
       ]);
 
-    const result = await ctr.stdout();
-
-    console.log(result);
+    await ctr.stdout();
   });
   return "Done";
 };
@@ -121,9 +119,7 @@ export const dryRun = async (
         "atlas schem apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --dry-run",
       ]);
 
-    const result = await ctr.stdout();
-
-    console.log(result);
+    await ctr.stdout();
   });
   return "Done";
 };
