@@ -43,8 +43,16 @@ dagger run fluentci .
 | dry_run   | Dry run migrations        |
 
 ```graphql
-dryRun(databaseUrl: String!, src: String!): String
-migrate(databaseUrl: String!, src: String!): String
+ dryRun(
+  databaseDevUrl: String,
+  databaseUrl: String!,
+  src: String!
+ ): String
+ migrate(
+  databaseDevUrl: String, 
+  databaseUrl: String!, 
+  src: String!
+ ): String
 ```
 
 ## Programmatic usage
@@ -52,7 +60,7 @@ migrate(databaseUrl: String!, src: String!): String
 You can also use this pipeline programmatically:
 
 ```ts
-import { migrate } from "https://pkg.fluentci.io/atlas_pipeline@v0.3.2/mod.ts";
+import { migrate } from "https://pkg.fluentci.io/atlas_pipeline@v0.4.0/mod.ts";
 
 await migrate();
 ```
