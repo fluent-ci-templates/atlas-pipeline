@@ -50,6 +50,8 @@ const schema = makeSchema({
 });
 
 schema.description = JSON.stringify({
+  "migrate.src": "directory",
+  "dryRun.src": "directory",
   "migrate.databaseUrl": "secret",
   "dryRun.databaseUrl": "secret",
 });
