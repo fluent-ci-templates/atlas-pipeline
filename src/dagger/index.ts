@@ -1,4 +1,4 @@
 import pipeline from "./pipeline.ts";
-import { migrate } from "./jobs.ts";
+import { migrate, dryRun } from "./jobs.ts";
 
-export { pipeline, migrate };
+export { pipeline, migrate, dryRun };
