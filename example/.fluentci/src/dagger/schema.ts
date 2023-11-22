@@ -16,25 +16,42 @@ const Query = queryType({
       args: {
         src: nonNull(stringArg()),
         databaseUrl: nonNull(stringArg()),
+        databaseDevUrl: stringArg(),
       },
       resolve: async (_root, args, _ctx) =>
-        await migrate(args.src, args.databaseUrl),
+        await migrate(
+          args.src,
+          args.databaseUrl,
+          args.databaseDevUrl || undefined
+        ),
     });
     t.string("dryRun", {
       args: {
         src: nonNull(stringArg()),
         databaseUrl: nonNull(stringArg()),
+        databaseDevUrl: stringArg(),
       },
       resolve: async (_root, args, _ctx) =>
-        await dryRun(args.src, args.databaseUrl),
+        await dryRun(
+          args.src,
+          args.databaseUrl,
+          args.databaseDevUrl || undefined
+        ),
     });
   },
 });
 
-export const schema = makeSchema({
+const schema = makeSchema({
   types: [Query],
   outputs: {
     schema: resolve(join(dirname(".."), dirname(".."), "schema.graphql")),
     typegen: resolve(join(dirname(".."), dirname(".."), "gen", "nexus.ts")),
   },
 });
+
+schema.description = JSON.stringify({
+  "migrate.databaseUrl": "secret",
+  "dryRun.databaseUrl": "secret",
+});
+
+export { schema };

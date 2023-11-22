@@ -58,10 +58,12 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Query: {
     dryRun: { // args
+      databaseDevUrl?: string | null; // String
       databaseUrl: string; // String!
       src: string; // String!
     }
     migrate: { // args
+      databaseDevUrl?: string | null; // String
       databaseUrl: string; // String!
       src: string; // String!
     }

@@ -3,6 +3,6 @@
 
 
 type Query {
-  dryRun(databaseUrl: String!, src: String!): String
-  migrate(databaseUrl: String!, src: String!): String
+  dryRun(databaseDevUrl: String, databaseUrl: String!, src: String!): String
+  migrate(databaseDevUrl: String, databaseUrl: String!, src: String!): String
 }
