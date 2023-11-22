@@ -7,11 +7,6 @@ export function generateYaml(): Workflow {
     branches: ["main"],
   };
 
-  const setupDagger = `\
-  curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.8.4 sh
-  sudo mv bin/dagger /usr/local/bin
-  dagger version`;
-
   const migrate: JobSpec = {
     "runs-on": "ubuntu-latest",
     steps: [
@@ -19,18 +14,8 @@ export function generateYaml(): Workflow {
         uses: "actions/checkout@v2",
       },
       {
-        uses: "denoland/setup-deno@v1",
-        with: {
-          "deno-version": "v1.36",
-        },
-      },
-      {
-        name: "Setup Fluent CI CLI",
-        run: "deno install -A -r https://cli.fluentci.io -n fluentci",
-      },
-      {
-        name: "Setup Dagger",
-        run: setupDagger,
+        name: "Setup Fluent CI",
+        uses: "fluentci-io/setup-fluentci@v2",
       },
       {
         name: "Run Dagger Pipelines",
