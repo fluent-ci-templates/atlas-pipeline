@@ -12,7 +12,11 @@ export default async function pipeline(src = ".", args: string[] = []) {
     return;
   }
 
-  await migrate();
+  await migrate(
+    src,
+    Deno.env.get("DATABASE_URL")!,
+    Deno.env.get("DATABASE_DEV_URL")
+  );
 }
 
 async function runSpecificJobs(args: jobs.Job[]) {
@@ -21,6 +25,10 @@ async function runSpecificJobs(args: jobs.Job[]) {
     if (!job) {
       throw new Error(`Job ${name} not found`);
     }
-    await job();
+    await job(
+      ".",
+      Deno.env.get("DATABASE_URL")!,
+      Deno.env.get("DATABASE_DEV_URL")
+    );
   }
 }
