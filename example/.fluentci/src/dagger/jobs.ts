@@ -9,11 +9,19 @@ export enum Job {
 
 export const exclude = [];
 
-export const migrate = async (
-  src: string | Directory | undefined = ".",
-  databaseUrl?: string | Secret,
+/**
+ * @function
+ * @description Run database migrations
+ * @param {string | Directory} src
+ * @param {string | Secret} databaseUrl
+ * @param {string} databaseDevUrl
+ * @returns {string}
+ */
+export async function migrate(
+  src: string | Directory,
+  databaseUrl: string | Secret,
   databaseDevUrl?: string
-) => {
+): Promise<string> {
   await connect(async (client: Client) => {
     const DATABASE_DEV_URL =
       Deno.env.get("DATABASE_DEV_URL") ||
@@ -65,13 +73,21 @@ export const migrate = async (
     await ctr.stdout();
   });
   return "Done";
-};
+}
 
-export const dryRun = async (
-  src: string | Directory | undefined = ".",
-  databaseUrl?: string | Secret,
+/**
+ * @function
+ * @description Run database migrations in dry run mode
+ * @param {string | Directory} src
+ * @param {string | Secret} databaseUrl
+ * @param {string} databaseDevUrl
+ * @returns {string}
+ */
+export async function dryRun(
+  src: string | Directory,
+  databaseUrl: string | Secret,
   databaseDevUrl?: string
-) => {
+): Promise<string> {
   await connect(async (client: Client) => {
     const context = getDirectory(client, src);
     const DATABASE_DEV_URL =
@@ -122,11 +138,11 @@ export const dryRun = async (
     await ctr.stdout();
   });
   return "Done";
-};
+}
 
 export type JobExec = (
-  src?: string,
-  databaseUrl?: string | Secret,
+  src: string | Directory,
+  databaseUrl: string | Secret,
   databaseDevUrl?: string
 ) => Promise<string>;
 
