@@ -50,17 +50,18 @@ dagger mod install github.com/fluent-ci-templates/atlas-pipeline@mod
 | migrate   | Apply database migrations |
 | dry_run   | Dry run migrations        |
 
-```graphql
- dryRun(
-  databaseDevUrl: String,
-  databaseUrl: String!,
-  src: String!
- ): String
- migrate(
-  databaseDevUrl: String, 
-  databaseUrl: String!, 
-  src: String!
- ): String
+```typescript
+dryRun(
+  src: string | Directory,
+  databaseUrl: string | Secret,
+  databaseDevUrl?: string
+): Promise<string>
+
+migrate(
+  src: string | Directory,
+  databaseUrl: string | Secret,
+  databaseDevUrl?: string
+): Promise<string> 
 ```
 
 ## Programmatic usage
