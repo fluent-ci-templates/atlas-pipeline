@@ -69,7 +69,7 @@ migrate(
 You can also use this pipeline programmatically:
 
 ```ts
-import { migrate } from "https://pkg.fluentci.io/atlas_pipeline@v0.5.0/mod.ts";
+import { migrate } from "https://pkg.fluentci.io/atlas_pipeline@v0.5.1/mod.ts";
 
 await migrate();
 ```

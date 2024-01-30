@@ -1,5 +1,4 @@
-import Client, { Directory, Secret } from "../../deps.ts";
-import { connect } from "../../sdk/connect.ts";
+import { Directory, Secret, dag } from "../../deps.ts";
 import { getDirectory, getDatabaseUrl } from "./lib.ts";
 
 export enum Job {
@@ -22,57 +21,55 @@ export async function migrate(
   databaseUrl: string | Secret,
   databaseDevUrl?: string
 ): Promise<string> {
-  await connect(async (client: Client) => {
-    const DATABASE_DEV_URL =
-      Deno.env.get("DATABASE_DEV_URL") ||
-      databaseDevUrl ||
-      "mysql://root:pass@mysqldev:3306/example";
+  const DATABASE_DEV_URL =
+    Deno.env.get("DATABASE_DEV_URL") ||
+    databaseDevUrl ||
+    "mysql://root:pass@mysqldev:3306/example";
 
-    const mysql = client
-      .container()
-      .from("mysql")
-      .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
-      .withEnvVariable("MYSQL_DATABASE", "example")
-      .withExposedPort(3306)
-      .asService();
+  const mysql = dag
+    .container()
+    .from("mysql")
+    .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
+    .withEnvVariable("MYSQL_DATABASE", "example")
+    .withExposedPort(3306)
+    .asService();
 
-    const mysqldev = client
-      .container()
-      .from("mysql")
-      .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
-      .withEnvVariable("MYSQL_DATABASE", "example")
-      .withExposedPort(3306)
-      .asService();
+  const mysqldev = dag
+    .container()
+    .from("mysql")
+    .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
+    .withEnvVariable("MYSQL_DATABASE", "example")
+    .withExposedPort(3306)
+    .asService();
 
-    const context = getDirectory(client, src);
-    const secret = getDatabaseUrl(client, databaseUrl);
-    if (!secret) {
-      console.error("DATABASE_URL is not set");
-      Deno.exit(1);
-    }
+  const context = await getDirectory(dag, src);
+  const secret = await getDatabaseUrl(dag, databaseUrl);
+  if (!secret) {
+    console.error("DATABASE_URL is not set");
+    Deno.exit(1);
+  }
 
-    const ctr = client
-      .pipeline(Job.migrate)
-      .container()
-      .from("alpine")
-      .withServiceBinding("mysql", mysql)
-      .withServiceBinding("mysqldev", mysqldev)
-      .withExec(["apk", "update"])
-      .withExec(["apk", "add", "curl"])
-      .withExec(["sh", "-c", "curl -sSf https://atlasgo.sh | sh"])
-      .withDirectory("/app", context)
-      .withWorkdir("/app")
-      .withSecretVariable("DATABASE_URL", secret)
-      .withEnvVariable("DATABASE_DEV_URL", DATABASE_DEV_URL)
-      .withExec([
-        "sh",
-        "-c",
-        "atlas schema apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --auto-approve",
-      ]);
+  const ctr = dag
+    .pipeline(Job.migrate)
+    .container()
+    .from("alpine")
+    .withServiceBinding("mysql", mysql)
+    .withServiceBinding("mysqldev", mysqldev)
+    .withExec(["apk", "update"])
+    .withExec(["apk", "add", "curl"])
+    .withExec(["sh", "-c", "curl -sSf https://atlasgo.sh | sh"])
+    .withDirectory("/app", context)
+    .withWorkdir("/app")
+    .withSecretVariable("DATABASE_URL", secret)
+    .withEnvVariable("DATABASE_DEV_URL", DATABASE_DEV_URL)
+    .withExec([
+      "sh",
+      "-c",
+      "atlas schema apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --auto-approve",
+    ]);
 
-    await ctr.stdout();
-  });
-  return "Done";
+  const result = await ctr.stdout();
+  return result;
 }
 
 /**
@@ -88,56 +85,54 @@ export async function dryRun(
   databaseUrl: string | Secret,
   databaseDevUrl?: string
 ): Promise<string> {
-  await connect(async (client: Client) => {
-    const context = getDirectory(client, src);
-    const DATABASE_DEV_URL =
-      Deno.env.get("DATABASE_DEV_URL") ||
-      databaseDevUrl ||
-      "mysql://root:pass@mysqldev:3306/example";
-    const secret = getDatabaseUrl(client, databaseUrl);
-    if (!secret) {
-      console.error("DATABASE_URL is not set");
-      Deno.exit(1);
-    }
+  const context = await getDirectory(dag, src);
+  const DATABASE_DEV_URL =
+    Deno.env.get("DATABASE_DEV_URL") ||
+    databaseDevUrl ||
+    "mysql://root:pass@mysqldev:3306/example";
+  const secret = await getDatabaseUrl(dag, databaseUrl);
+  if (!secret) {
+    console.error("DATABASE_URL is not set");
+    Deno.exit(1);
+  }
 
-    const mysql = client
-      .container()
-      .from("mysql")
-      .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
-      .withEnvVariable("MYSQL_DATABASE", "example")
-      .withExposedPort(3306)
-      .asService();
+  const mysql = dag
+    .container()
+    .from("mysql")
+    .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
+    .withEnvVariable("MYSQL_DATABASE", "example")
+    .withExposedPort(3306)
+    .asService();
 
-    const mysqldev = client
-      .container()
-      .from("mysql")
-      .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
-      .withEnvVariable("MYSQL_DATABASE", "example")
-      .withExposedPort(3306)
-      .asService();
+  const mysqldev = dag
+    .container()
+    .from("mysql")
+    .withEnvVariable("MYSQL_ROOT_PASSWORD", "pass")
+    .withEnvVariable("MYSQL_DATABASE", "example")
+    .withExposedPort(3306)
+    .asService();
 
-    const ctr = client
-      .pipeline(Job.migrate)
-      .container()
-      .from("alpine")
-      .withServiceBinding("mysql", mysql)
-      .withServiceBinding("mysqldev", mysqldev)
-      .withExec(["apk", "update"])
-      .withExec(["apk", "add", "curl"])
-      .withExec(["sh", "-c", "curl -sSf https://atlasgo.sh | sh"])
-      .withDirectory("/app", context)
-      .withWorkdir("/app")
-      .withEnvVariable("DATABASE_DEV_URL", DATABASE_DEV_URL)
-      .withSecretVariable("DATABASE_URL", secret)
-      .withExec([
-        "sh",
-        "-c",
-        "atlas schem apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --dry-run",
-      ]);
+  const ctr = dag
+    .pipeline(Job.migrate)
+    .container()
+    .from("alpine")
+    .withServiceBinding("mysql", mysql)
+    .withServiceBinding("mysqldev", mysqldev)
+    .withExec(["apk", "update"])
+    .withExec(["apk", "add", "curl"])
+    .withExec(["sh", "-c", "curl -sSf https://atlasgo.sh | sh"])
+    .withDirectory("/app", context)
+    .withWorkdir("/app")
+    .withEnvVariable("DATABASE_DEV_URL", DATABASE_DEV_URL)
+    .withSecretVariable("DATABASE_URL", secret)
+    .withExec([
+      "sh",
+      "-c",
+      "atlas schem apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --dry-run",
+    ]);
 
-    await ctr.stdout();
-  });
-  return "Done";
+  const result = await ctr.stdout();
+  return result;
 }
 
 export type JobExec = (
