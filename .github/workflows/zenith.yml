@@ -10,10 +10,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Dagger Zenith
         run: |
-          curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.9.3 sh
+          curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.9.7 sh
           sudo mv bin/dagger /usr/local/bin
           dagger version
       - name: Setup DATABASE_URL
@@ -23,5 +23,7 @@ jobs:
           DATABASE_URL: mysql://root:pass@mysql:3306/example
       - name: Run Dagger Pipelines
         run: |
-          dagger query --doc migrate.gql
+          dagger call migrate --src . --database-url DATABASE_URL
         working-directory: example
+        env:
+          DATABASE_URL: mysql://root:pass@mysql:3306/example

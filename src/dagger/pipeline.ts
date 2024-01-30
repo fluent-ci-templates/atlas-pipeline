@@ -1,26 +1,30 @@
-import { uploadContext } from "../../deps.ts";
 import * as jobs from "./jobs.ts";
 
-const { migrate, runnableJobs, exclude } = jobs;
+const { migrate, runnableJobs } = jobs;
 
 export default async function pipeline(src = ".", args: string[] = []) {
-  if (Deno.env.has("FLUENTCI_SESSION_ID")) {
-    await uploadContext(src, exclude);
-  }
   if (args.length > 0) {
-    await runSpecificJobs(args as jobs.Job[]);
+    await runSpecificJobs(src, args as jobs.Job[]);
     return;
   }
 
+<<<<<<< HEAD
   await migrate();
+=======
+  await migrate(src, Deno.env.get("DATABASE_URL")!);
+>>>>>>> b10747f (fix issue with dagger connect)
 }
 
-async function runSpecificJobs(args: jobs.Job[]) {
+async function runSpecificJobs(src: string, args: jobs.Job[]) {
   for (const name of args) {
     const job = runnableJobs[name];
     if (!job) {
       throw new Error(`Job ${name} not found`);
     }
+<<<<<<< HEAD
     await job();
+=======
+    await job(src, Deno.env.get("DATABASE_URL")!);
+>>>>>>> b10747f (fix issue with dagger connect)
   }
 }
