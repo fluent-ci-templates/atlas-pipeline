@@ -1,4 +1,8 @@
-import { Directory, Secret, dag } from "../../deps.ts";
+/**
+ * @module atlas
+ * @description This module provides a set of functions to run database migrations using Atlas.
+ */
+import { Directory, Secret, dag, env, exit } from "../../deps.ts";
 import { getDirectory, getDatabaseUrl } from "./lib.ts";
 
 export enum Job {
@@ -9,6 +13,8 @@ export enum Job {
 export const exclude = [];
 
 /**
+ * Run database migrations
+ *
  * @function
  * @description Run database migrations
  * @param {string | Directory} src
@@ -22,7 +28,7 @@ export async function migrate(
   databaseDevUrl?: string
 ): Promise<string> {
   const DATABASE_DEV_URL =
-    Deno.env.get("DATABASE_DEV_URL") ||
+    env.get("DATABASE_DEV_URL") ||
     databaseDevUrl ||
     "mysql://root:pass@mysqldev:3306/example";
 
@@ -42,11 +48,12 @@ export async function migrate(
     .withExposedPort(3306)
     .asService();
 
-  const context = await getDirectory(dag, src);
-  const secret = await getDatabaseUrl(dag, databaseUrl);
+  const context = await getDirectory(src);
+  const secret = await getDatabaseUrl(databaseUrl);
   if (!secret) {
     console.error("DATABASE_URL is not set");
-    Deno.exit(1);
+    exit(1);
+    return "";
   }
 
   const ctr = dag
@@ -68,11 +75,12 @@ export async function migrate(
       "atlas schema apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --auto-approve",
     ]);
 
-  const result = await ctr.stdout();
-  return result;
+  return ctr.stdout();
 }
 
 /**
+ * Run database migrations in dry run mode
+ *
  * @function
  * @description Run database migrations in dry run mode
  * @param {string | Directory} src
@@ -85,12 +93,12 @@ export async function dryRun(
   databaseUrl: string | Secret,
   databaseDevUrl?: string
 ): Promise<string> {
-  const context = await getDirectory(dag, src);
+  const context = await getDirectory(src);
   const DATABASE_DEV_URL =
-    Deno.env.get("DATABASE_DEV_URL") ||
+    env.get("DATABASE_DEV_URL") ||
     databaseDevUrl ||
     "mysql://root:pass@mysqldev:3306/example";
-  const secret = await getDatabaseUrl(dag, databaseUrl);
+  const secret = await getDatabaseUrl(databaseUrl);
   if (!secret) {
     console.error("DATABASE_URL is not set");
     Deno.exit(1);
@@ -131,8 +139,7 @@ export async function dryRun(
       "atlas schem apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --dry-run",
     ]);
 
-  const result = await ctr.stdout();
-  return result;
+  return ctr.stdout();
 }
 
 export type JobExec = (

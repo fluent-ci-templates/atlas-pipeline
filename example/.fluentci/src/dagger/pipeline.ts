@@ -1,4 +1,5 @@
 import * as jobs from "./jobs.ts";
+import { env } from "../../deps.ts";
 
 const { migrate, runnableJobs } = jobs;
 
@@ -8,7 +9,7 @@ export default async function pipeline(src = ".", args: string[] = []) {
     return;
   }
 
-  await migrate(src, Deno.env.get("DATABASE_URL")!);
+  await migrate(src, env.get("DATABASE_URL")!);
 }
 
 async function runSpecificJobs(src: string, args: jobs.Job[]) {
@@ -17,6 +18,6 @@ async function runSpecificJobs(src: string, args: jobs.Job[]) {
     if (!job) {
       throw new Error(`Job ${name} not found`);
     }
-    await job(src, Deno.env.get("DATABASE_URL")!);
+    await job(src, env.get("DATABASE_URL")!);
   }
 }
