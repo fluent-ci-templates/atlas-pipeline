@@ -136,7 +136,7 @@ export async function dryRun(
     .withExec([
       "sh",
       "-c",
-      "atlas schem apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --dry-run",
+      "atlas schema apply --url $DATABASE_URL --to file://schema.hcl --dev-url $DATABASE_DEV_URL --dry-run",
     ]);
 
   return ctr.stdout();

@@ -8,16 +8,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: denolib/setup-deno@v2
+      - name: Shutdown Ubuntu MySQL (SUDO)
+        run: sudo service mysql stop
+      - uses: getong/mariadb-action@v1.1
         with:
-          deno-version: v1.41
+          mysql database: "example"
+          mysql user: "user"
+          mysql password: "password"
+      - uses: getong/mariadb-action@v1.1
+        with:
+          host port: 3800
+          mysql database: "example"
+          mysql user: "user"
+          mysql password: "password"
       - name: Setup Fluent CI CLI
-        run: deno install -A -r https://cli.fluentci.io -n fluentci
-      - name: Setup Dagger
-        run: |
-          curl -L https://dl.dagger.io/dagger/install.sh | DAGGER_VERSION=0.10.0 sh
-          sudo mv bin/dagger /usr/local/bin
-          dagger version
+        uses: fluentci-io/setup-fluentci@v5
+        with:
+          wasm: true
+          pipeline: .
+          args: |
+            dry_run
+            migrate --auto-approve
+          working-directory: example
+        env:
+          DATABASE_URL: mysql://user:password@127.0.0.1:3306/example
+          DATABASE_DEV_URL: mysql://user:password@127.0.0.1:3800/example
       - name: Run Dagger Pipelines
         run: dagger run deno run -A ../src/dagger/runner.ts
         working-directory: example
