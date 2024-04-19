@@ -16,14 +16,6 @@ jobs:
           mysql database: "example"
           mysql user: "user"
           mysql password: "password"
-      - uses: getong/mariadb-action@v1.1
-        with:
-          collation server: "utf8mb4_0900_ai_ci"
-          host port: 3307
-          container port: 3307
-          mysql database: "example"
-          mysql user: "user"
-          mysql password: "password"
       - name: Setup Fluent CI CLI
         uses: fluentci-io/setup-fluentci@v5
         with:
@@ -34,8 +26,8 @@ jobs:
             migrate --auto-approve
           working-directory: example
         env:
-          DATABASE_URL: mysql://user:password@127.0.0.1:3306/example
-          DATABASE_DEV_URL: mysql://user:password@127.0.0.1:3307/example
+          DATABASE_URL: docker://maria/latest/example
+          DATABASE_DEV_URL: docker://maria/latest/schema
       - name: Run Dagger Pipelines
         run: dagger run deno run -A ../src/dagger/runner.ts
         working-directory: example
