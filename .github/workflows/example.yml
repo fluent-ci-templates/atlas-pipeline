@@ -19,7 +19,8 @@ jobs:
       - uses: getong/mariadb-action@v1.1
         with:
           collation server: "utf8mb4_0900_ai_ci"
-          host port: 3800
+          host port: 3307
+          container port: 3307
           mysql database: "example"
           mysql user: "user"
           mysql password: "password"
@@ -34,7 +35,7 @@ jobs:
           working-directory: example
         env:
           DATABASE_URL: mysql://user:password@127.0.0.1:3306/example
-          DATABASE_DEV_URL: mysql://user:password@127.0.0.1:3800/example
+          DATABASE_DEV_URL: mysql://user:password@127.0.0.1:3307/example
       - name: Run Dagger Pipelines
         run: dagger run deno run -A ../src/dagger/runner.ts
         working-directory: example
