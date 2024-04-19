@@ -12,11 +12,13 @@ jobs:
         run: sudo service mysql stop
       - uses: getong/mariadb-action@v1.1
         with:
+          collation server: "utf8mb4_0900_ai_ci"
           mysql database: "example"
           mysql user: "user"
           mysql password: "password"
       - uses: getong/mariadb-action@v1.1
         with:
+          collation server: "utf8mb4_0900_ai_ci"
           host port: 3800
           mysql database: "example"
           mysql user: "user"
