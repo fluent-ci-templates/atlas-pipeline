@@ -1,0 +1,8 @@
+[package]
+authors = [
+  "Tsiry Sandratraina <tsiry.sndr@fluentci.io>",
+]
+description = "CI/CD Plugin for Atlas"
+license = "MIT"
+name = "atlas"
+version = "0.7.0"
